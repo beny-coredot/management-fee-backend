@@ -1,0 +1,20 @@
+{
+    "type": "mysql",
+    "host": "localhost",
+    "port": 3306,
+    "username": "root",
+    "password": "0000",
+    "database": "management_fee",
+    "synchronize": true,
+    "logging": true,
+    "logger": "simple-console",
+    "keepConnectionAlive": true,
+    "retryAttempts": 5,
+    "extra": {
+       "charset": "utf8mb4_unicode_ci"
+    },
+    "entities": [
+        "dist/**/*.entity{.ts,.js}"
+    ]
+ }
+ 
