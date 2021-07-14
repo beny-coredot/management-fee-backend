@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Building } from "./building.entity";
-import { BuildingVote } from "./building.vote";
+import { BuildingVote } from "./building.vote.entity";
 import { User } from "./user.entity";
 
 export enum NoticeType {
@@ -12,7 +12,7 @@ export enum NoticeType {
 @Entity()
 export class BuildingNotice {
 
-    @PrimaryGeneratedColumn({ comment: '고유 넘버'})
+    @PrimaryGeneratedColumn({ comment: '공지 id'})
     id: number;
 
     @Column( { type: 'enum', enum: NoticeType, name: 'type', comment: '타입' })

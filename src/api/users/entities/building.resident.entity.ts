@@ -5,7 +5,7 @@ import { User } from "./user.entity";
 @Entity()
 export class BuildingResident {
 
-    @PrimaryGeneratedColumn({ comment: '고유 넘버'})
+    @PrimaryGeneratedColumn({ comment: '입주자 id'})
     id: number;
 
     @Column( { name: 'floor_unit', comment: '호실' })
@@ -24,9 +24,9 @@ export class BuildingResident {
     @JoinColumn({name: 'building_id'})
     building: Building;
 
-    // @ManyToOne(() => User, user => user.buildingResidents, {onDelete: 'CASCADE'})
-    // @JoinColumn({name: 'user_id'})
-    // user: User;
+    @ManyToOne(() => User, user => user.buildingResidents, {onDelete: 'CASCADE'})
+    @JoinColumn({name: 'user_id'})
+    user: User;
 
     @UpdateDateColumn({ name: 'updated_at', comment: '수정일', select: false })
     updatedAt: Date;

@@ -11,7 +11,7 @@ export class UsersController {
         private readonly usersService: UsersService
     ) {}
 
-    @ApiOperation({description: '조회', summary: '서비스 가입 요청(키직접 입력)'})
+    @ApiOperation({description: '조회', summary: '유저 조회'})
     @Get('')
     findAll(): Promise<User[]> {
         return this.usersService.findAll();
