@@ -6,7 +6,7 @@ import { AuthJwtStrategy } from './auth.jwt.strategy';
 
 export interface JwtOptions {
     secretKey: string,
-    expireDays: string,
+    expireDays: string
 }
 
 @Module({})
@@ -15,16 +15,18 @@ export class AuthJwtModule {
         return {
             module: AuthJwtModule,
             imports: [
-                PassportModule, JwtModule.register({secret: options.secretKey, signOptions: {expiresIn: options.expireDays}})
+                PassportModule, 
+                JwtModule.register({secret: options.secretKey, signOptions: {expiresIn: options.expireDays}}),
             ],
             providers: [
+                AuthJwtService,
                 {
                     provide: AuthJwtStrategy,
                     useValue: new AuthJwtStrategy(options.secretKey)
                 }
             ],
             exports: [
-                AuthJwtService
+                AuthJwtService,
             ]
         }
     }

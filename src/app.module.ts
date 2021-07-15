@@ -1,8 +1,8 @@
 import { MiddlewareConsumer, Module, NestModule, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './api/users/users.module';
-import { AdministersModule } from './api/administers/administers.module';
+import { UserModule } from './api/user/user.module';
+import { AdministerModule } from './api/administer/administer.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { AspectLoggerInterceptor } from './interceptor/logger.interceptor';
@@ -12,8 +12,8 @@ import { ExceptionsFilter } from './filter/exception.filter';
     imports: [
         ConfigModule.forRoot(),
         TypeOrmModule.forRoot(),
-        UsersModule,
-        AdministersModule
+        UserModule,
+        AdministerModule
     ],
     controllers: [],
     providers: [
