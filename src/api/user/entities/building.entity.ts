@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BuildingArea } from "./building.area.entity";
 import { BuildingNotice } from "./building.notice.entity";
 import { BuildingResident } from "./building.resident.entity";
 
@@ -71,8 +72,8 @@ export class Building {
     @Column({ type: 'simple-json', name: 'meta', comment: '메타 정보(json)'})
     meta: object;
 
-    @OneToMany(() => BuildingResident, buildingResident => buildingResident.building)
-    buildingResidents: BuildingResident[];
+    @OneToMany(() => BuildingArea, buildingArea => buildingArea.building, {cascade: true})
+    BuildingAreas: BuildingArea[];
 
     @OneToMany(() => BuildingNotice, buildingNotice => buildingNotice.building)
     notices: BuildingNotice[];

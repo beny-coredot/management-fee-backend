@@ -22,7 +22,7 @@ export class User {
     @Column( { name: 'profile', comment: '프로필 주소', nullable: true })
     profile: string;
 
-    @Column( { name: 'selected_building_idx', comment: '건물 선택된 인덱스' })
+    @Column( { name: 'selected_building_idx', comment: '건물 선택된 인덱스', nullable: true })
     selecetdBuildingIdx: number;
 
     @OneToMany(() => BuildingResident, buildingResident => buildingResident.user)

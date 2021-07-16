@@ -1,5 +1,4 @@
-import { HttpService } from "@nestjs/axios";
-import { Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, HttpService,Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 
 @Injectable()
 export class PublicDataService {
@@ -14,12 +13,21 @@ export class PublicDataService {
 
         try {
 
-            const result = this.httpService.get(`http://apis.data.go.kr/1613000/BldRgstService_v2/getBrTitleInfo?${this.getQueryString(sigunguCd, bjdongCd, bun, ji)}`);
+            const result = await this.httpService.get(`http://apis.data.go.kr/1613000/BldRgstService_v2/getBrTitleInfo?${this.getQueryString(sigunguCd, bjdongCd, bun, ji)}`).toPromise();
+            const data = result.data;
 
-            this.logger.log(`[data.go.kr] - complete getBrTitleInfo api : ${result}`);
+            if (data.response.header.resultCode != '00') {
+                this.logger.warn(`[data.go.kr] - complete getBrTitleInfo api : ${JSON.stringify(data)}`);
+                throw new BadRequestException('[data.go.kr] - Invalidate result header value');
+            }
+
+            this.logger.log(`[data.go.kr] - complete getBrTitleInfo api : ${JSON.stringify(data)}`);
+
+            return data.response.body;
         }
         catch (error) {
             this.logger.error(`[data.go.kr] getBrTitleInfo - ${error.message}`);
+            throw error;
         }
     }
 
@@ -27,12 +35,21 @@ export class PublicDataService {
 
         try {
 
-            const result = this.httpService.get(`http://apis.data.go.kr/1613000/BldRgstService_v2/getBrExposPubuseAreaInfo?${this.getQueryString(sigunguCd, bjdongCd, bun, ji)}`);
+            const result = await this.httpService.get(`http://apis.data.go.kr/1613000/BldRgstService_v2/getBrExposPubuseAreaInfo?${this.getQueryString(sigunguCd, bjdongCd, bun, ji)}`).toPromise();
+            const data = result.data;
 
-            this.logger.log(`[data.go.kr] - complete getBrExposPubuseAreaInfo api : ${result}`);
+            if (data.response.header.resultCode != '00') {
+                this.logger.warn(`[data.go.kr] - complete getBrExposPubuseAreaInfo api : ${JSON.stringify(data)}`);
+                throw new BadRequestException('[data.go.kr] - Invalidate result header value');
+            }
+
+            this.logger.log(`[data.go.kr] - complete getBrExposPubuseAreaInfo api : ${JSON.stringify(data)}`);
+
+            return data.response.body;
         }
         catch (error) {
             this.logger.error(`[data.go.kr] getBrExposPubuseAreaInfo - ${error.message}`);
+            throw error;
         }
     }
 

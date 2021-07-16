@@ -1,11 +1,16 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserJoinDTO } from './dto/user.join.dto';
 import { UserLoginDto } from './dto/user.login.dto';
-import { UserRegisterBuildingDto } from './dto/user.register.building';
+import { BuildingDto } from './dto/building.dto';
 import { User } from './entities/user.entity';
 import { Payload, UserAuth } from './user.decorator';
 import { UserService } from './user.service';
+import { BuildingRequestDto } from './dto/building.request.dto';
+import { UserPayload } from './user.payload';
+import { IdParams } from 'src/common/id.params';
+import { BuildingAddResidentDto } from './dto/building.add.resident.dto';
+import { BuildingAddRepresentDto } from './dto/building.add.represent.dto';
 
 @ApiTags('user')
 @Controller('api/v1/user')
@@ -31,18 +36,47 @@ export class UserController {
         return this.usersService.login(dto);
     }
 
-    @ApiOperation({summary: '유저 정보 조회'})
+    @ApiOperation({summary: '유저 정보 조회', description: '정보 조회 시 입주자 대표가 추가한 입주자로의 매핑이 필요한 경우를 알려줌'})
+    @UserAuth()
     @Get('')
-    getUser(@Payload() payload) {
+    getUser(@Payload() payload: UserPayload) {
         return this.usersService.getUser(payload);
     }
-    
-    @ApiOperation({summary: '빌딩 등록'})
-    @ApiResponse({status: 404, description: '건물 정보가 없음'})
-    @Post('building/register')
-    registerBuilding(@Payload() payload, @Body() dto: UserRegisterBuildingDto) {
-        return this.usersService.registerBuilding(payload, dto);
+
+    @ApiOperation({summary: '등록된 건물 조회'})
+    @ApiResponse({status: 404, description: '해당 주소의 등록된 건물이 없음'})
+    @Get('building')
+    findBuilding(@Payload() payload: UserPayload, @Query() dto: BuildingDto) {
+        return this.usersService.findBuilding(payload, dto);
     }
+
+    @ApiOperation({summary: '건물 등록'})
+    @ApiResponse({status: 400, description: '공공 api 응답 해더가 잘못됨'})
+    @Post('building')
+    createBuilding(@Payload() payload: UserPayload, @Body() dto: BuildingDto) {
+        return this.usersService.createBuilding(payload, dto);
+    }
+
+    @ApiOperation({summary: '건물 등록 요청'})
+    @UserAuth()
+    @Post('building/request')
+    requestBuilding(@Payload() payload: UserPayload, @Body() dto: BuildingRequestDto) {
+        return this.usersService.requestBuilding(payload, dto);
+    }
+
+    @ApiOperation({summary: '건물 입주자 대표로 등록'})
+    @Post('building/:id/represent')
+    addRepresentInBuilding(@Payload() payload: UserPayload, @Param() params: IdParams, @Body() dto: BuildingAddRepresentDto) {
+        return this.usersService.addRepresentInBuilding(payload, params.id, dto);
+    }
+
+    @ApiOperation({summary: '건물 입주자 추가', description: '입주자 대표만 추가 가능'})
+    @Post('building/:id/resident')
+    addRegidentInBuilding(@Payload() payload: UserPayload, @Param() params: IdParams, @Body() dto: BuildingAddResidentDto) {
+        return this.usersService.addRegidentInBuilding(payload, params.id, dto);
+    }
+
+
 
     @ApiOperation({summary: '유저 홈 정보 조회'})
     @Get('home')

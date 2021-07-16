@@ -1,6 +1,14 @@
 import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BuildingArea } from "./building.area.entity";
 import { Building } from "./building.entity";
 import { User } from "./user.entity";
+
+export enum ResidentType {
+    NORMAL = "NORMAL",
+    REPRESENT = "REPRESENT",
+    FAMILY = "FAMILY",
+}
+
 
 @Entity()
 export class BuildingResident {
@@ -8,21 +16,12 @@ export class BuildingResident {
     @PrimaryGeneratedColumn({ comment: '입주자 id'})
     id: number;
 
-    @Column( { name: 'floor_unit', comment: '호실' })
-    floorUnit: string;
+    @Column( { type: 'enum', enum: ResidentType, name: 'type', comment: '입주자 타입(일반,대표,가족)' })
+    type: ResidentType;
 
-    @Column( { name: 'resident_name', comment: '입주자 이름' })
-    residentName: string;
-
-    @Column( { name: 'resident_phone', comment: '입주자 전화번호' })
-    residentPhone: string;
-
-    @Column( { name: 'is_representer', comment: '대표자 여부' })
-    isRepresenter: boolean;
-
-    @ManyToOne(() => Building, building => building.buildingResidents, {onDelete: 'CASCADE'})
-    @JoinColumn({name: 'building_id'})
-    building: Building;
+    @ManyToOne(() => BuildingArea, buildingArea => buildingArea.buildingResidents, {onDelete: 'CASCADE'})
+    @JoinColumn({name: 'building_area_id'})
+    buildingArea: BuildingArea;
 
     @ManyToOne(() => User, user => user.buildingResidents, {onDelete: 'CASCADE'})
     @JoinColumn({name: 'user_id'})
