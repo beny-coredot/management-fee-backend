@@ -1,7 +1,10 @@
-import { Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UserJoinDTO } from './dto/user.join.dto';
+import { UserLoginDto } from './dto/user.login.dto';
+import { UserRegisterBuildingDto } from './dto/user.register.building';
 import { User } from './entities/user.entity';
-import { UserAuth } from './user.decorator';
+import { Payload, UserAuth } from './user.decorator';
 import { UserService } from './user.service';
 
 @ApiTags('user')
@@ -13,22 +16,39 @@ export class UserController {
     ) {}
 
 
-    @ApiOperation({description: '로그인', summary: '유저 조회'})
+
+    @ApiOperation({summary: '유저 가입'})
+    @ApiResponse({status: 400, description: '기존 유저가 있음'})
+    @Post('join')
+    join(@Body() dto: UserJoinDTO) {
+        return this.usersService.join(dto);
+    }
+
+    @ApiOperation({summary: '유저 로그인 (토큰 발급)'})
+    @ApiResponse({status: 404, description: '유저 정보가 없음'})
     @Post('login')
-    login(): Promise<string> {
-        return this.usersService.login();
+    login(@Body() dto: UserLoginDto) {
+        return this.usersService.login(dto);
     }
 
-    @ApiOperation({description: '조회', summary: '유저 조회'})
-    @UserAuth()
+    @ApiOperation({summary: '유저 정보 조회'})
     @Get('')
-    find(): Promise<any> {
-        return this.usersService.findOne();
+    getUser(@Payload() payload) {
+        return this.usersService.getUser(payload);
+    }
+    
+    @ApiOperation({summary: '빌딩 등록'})
+    @ApiResponse({status: 404, description: '건물 정보가 없음'})
+    @Post('building/register')
+    registerBuilding(@Payload() payload, @Body() dto: UserRegisterBuildingDto) {
+        return this.usersService.registerBuilding(payload, dto);
     }
 
-    @ApiOperation({description: '조회', summary: '유저 조회'})
-    @Get('all')
-    findAll(): Promise<User[]> {
-        return this.usersService.findAll();
+    @ApiOperation({summary: '유저 홈 정보 조회'})
+    @Get('home')
+    getUserHome(@Payload() payload) {
+        return this.usersService.getUserHome(payload);
     }
+
+
 }

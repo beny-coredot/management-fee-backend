@@ -1,6 +1,8 @@
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthJwtModule } from 'src/authorization/auth.jwt.module';
+import { PublicDataService } from 'src/service/public.data.service';
 import { Building } from './entities/building.entity';
 import { BuildingNotice } from './entities/building.notice.entity';
 import { BuildingResident } from './entities/building.resident.entity';
@@ -23,10 +25,14 @@ import { UserService } from './user.service';
         AuthJwtModule.register({
             expireDays: '30d',
             secretKey: 'secretuser1234',
-        })
+        }),
+        HttpModule,
     ],
     controllers: [UserController],
-    providers: [UserService]
+    providers: [
+        UserService,
+        PublicDataService,
+    ]
 })
 
 export class UserModule {}
