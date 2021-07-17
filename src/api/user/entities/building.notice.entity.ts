@@ -15,7 +15,7 @@ export class BuildingNotice {
     @PrimaryGeneratedColumn({ comment: '공지 id'})
     id: number;
 
-    @Column( { type: 'enum', enum: NoticeType, name: 'type', comment: '타입' })
+    @Column( { type: 'enum', enum: NoticeType, name: 'type', comment: '공지 타입' })
     type: NoticeType;
 
     @Column( { name: 'register_name', comment: '등록자 이름' })

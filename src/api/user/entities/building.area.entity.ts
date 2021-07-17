@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BuildingAreaFee } from "./building.area.fee.entity";
 import { Building } from "./building.entity";
 import { BuildingResident } from "./building.resident.entity";
 import { BuildingVote } from "./building.vote.entity";
@@ -41,9 +42,12 @@ export class BuildingArea {
     @OneToMany(() => BuildingResident, buildingResident => buildingResident.buildingArea)
     buildingResidents: BuildingResident[];
 
+    @OneToMany(() => BuildingAreaFee, buildingAreaFee => buildingAreaFee.buildingArea)
+    buildingFees: BuildingAreaFee[];
+
     @UpdateDateColumn({ name: 'updated_at', comment: '수정일', select: false })
     updatedAt: Date;
 
-    @CreateDateColumn({ name: 'created_at', comment: '생성일' })
+    @CreateDateColumn({ name: 'created_at', comment: '생성일', select: false  })
     createdAt: Date;
 }

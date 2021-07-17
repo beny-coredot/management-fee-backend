@@ -178,7 +178,7 @@ export class UserService {
 
         // 입주자 대표 체크
         const buildingResident = await this.buildingResidentRepository.createQueryBuilder('buildingResident')
-            .innerJoinAndSelect('buldingResident.user', 'user')
+            .innerJoinAndSelect('buildingResident.user', 'user')
             .leftJoinAndSelect('buildingResident.buildingArea', 'buildingArea')
             .leftJoinAndSelect('buildingArea.building', 'building')
             .where('user.id = :userId', {userId: userId})
@@ -208,6 +208,7 @@ export class UserService {
 
         buildingArea.residentName = payload.name;
         buildingArea.residentPhone = payload.phone;
+        buildingArea.isRegister = true;
 
         const buildingResident = new BuildingResident();
         buildingResident.buildingArea = buildingArea;
@@ -240,8 +241,8 @@ export class UserService {
             throw new BadRequestException('Already register redident');
         }
 
-        buildingArea.residentName = payload.name;
-        buildingArea.residentPhone = payload.phone;
+        buildingArea.residentName = dto.residentName;
+        buildingArea.residentPhone = dto.residentPhone;
 
         await this.buildingAreaRepository.save(buildingArea);
     }
@@ -270,7 +271,7 @@ export class UserService {
 
         const buildingResident = await this.buildingResidentRepository.createQueryBuilder('buildingResident')
             .leftJoinAndSelect('buildingResident.buildingArea', 'buildingArea')
-            .where('buildingArea.id = areaId', {areaId: dto.buildingAreaId})
+            .where('buildingArea.id = :areaId', {areaId: dto.buildingAreaId})
             .getMany();
 
         await this.connection.transaction(async manager => {

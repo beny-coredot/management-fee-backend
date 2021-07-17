@@ -36,7 +36,7 @@ export class UserController {
         return this.usersService.login(dto);
     }
 
-    @ApiOperation({summary: '유저 정보 조회', description: '정보 조회 시 입주자 대표가 추가한 입주자로의 매핑이 필요한 경우를 알려줌'})
+    @ApiOperation({summary: '유저 기본 정보 조회', description: '정보 조회 시 입주자 대표가 추가한 입주자로의 매핑이 필요한 경우를 알려줌'})
     @UserAuth()
     @Get('')
     getUser(@Payload() payload: UserPayload) {
@@ -65,24 +65,28 @@ export class UserController {
     }
 
     @ApiOperation({summary: '건물 입주자 대표로 등록'})
+    @UserAuth()
     @Post('building/:id/represent')
     addRepresentInBuilding(@Payload() payload: UserPayload, @Param() params: IdParams, @Body() dto: BuildingAddRepresentDto) {
         return this.usersService.addRepresentInBuilding(payload, params.id, dto);
     }
 
-    @ApiOperation({summary: '건물 입주자 추가 (입주자 대표만 추가 가능)'})
+    @ApiOperation({summary: '건물 입주자 추가 및 업데이트 (입주자 대표만 가능)'})
+    @UserAuth()
     @Post('building/:id/resident')
     addResidentInBuilding(@Payload() payload: UserPayload, @Param() params: IdParams, @Body() dto: BuildingAddResidentDto) {
         return this.usersService.addResidentInBuilding(payload, params.id, dto);
     }
 
-    @ApiOperation({summary: '건물 입주자 삭제 (입주자 대표만 삭제 가능)'})
+    @ApiOperation({summary: '건물 입주자 삭제 (입주자 대표만 가능)'})
+    @UserAuth()
     @Delete('building/:id/resident')
     deleteResidentInBuilding(@Payload() payload: UserPayload, @Param() params: IdParams, @Body() dto: BuildingRemoveResidentDto) {
         return this.usersService.deleteResidentInBuilding(payload, params.id, dto);
     }
 
     @ApiOperation({summary: '건물 입주자 등록 체크 (입주자 확인)'})
+    @UserAuth()
     @Post('building/:id/resident/confirm')
     confirmResidentInBuilding(@Payload() payload: UserPayload, @Param() params: IdParams, @Body() dto: BuildingConfirmResidentDto) {
         return this.usersService.confirmResidentInBuilding(payload, params.id, dto);
