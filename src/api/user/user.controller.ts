@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserJoinDTO } from './dto/user.join.dto';
 import { UserLoginDto } from './dto/user.login.dto';
@@ -11,6 +11,8 @@ import { UserPayload } from './user.payload';
 import { IdParams } from 'src/common/id.params';
 import { BuildingAddResidentDto } from './dto/building.add.resident.dto';
 import { BuildingAddRepresentDto } from './dto/building.add.represent.dto';
+import { BuildingRemoveResidentDto } from './dto/building.remove.resident.dto';
+import { BuildingConfirmResidentDto as BuildingConfirmResidentDto } from './dto/building.confrim.resident.dto';
 
 @ApiTags('user')
 @Controller('api/v1/user')
@@ -19,8 +21,6 @@ export class UserController {
     constructor(
         private readonly usersService: UserService
     ) {}
-
-
 
     @ApiOperation({summary: '유저 가입'})
     @ApiResponse({status: 400, description: '기존 유저가 있음'})
@@ -70,13 +70,23 @@ export class UserController {
         return this.usersService.addRepresentInBuilding(payload, params.id, dto);
     }
 
-    @ApiOperation({summary: '건물 입주자 추가', description: '입주자 대표만 추가 가능'})
+    @ApiOperation({summary: '건물 입주자 추가 (입주자 대표만 추가 가능)'})
     @Post('building/:id/resident')
-    addRegidentInBuilding(@Payload() payload: UserPayload, @Param() params: IdParams, @Body() dto: BuildingAddResidentDto) {
-        return this.usersService.addRegidentInBuilding(payload, params.id, dto);
+    addResidentInBuilding(@Payload() payload: UserPayload, @Param() params: IdParams, @Body() dto: BuildingAddResidentDto) {
+        return this.usersService.addResidentInBuilding(payload, params.id, dto);
     }
 
+    @ApiOperation({summary: '건물 입주자 삭제 (입주자 대표만 삭제 가능)'})
+    @Delete('building/:id/resident')
+    deleteResidentInBuilding(@Payload() payload: UserPayload, @Param() params: IdParams, @Body() dto: BuildingRemoveResidentDto) {
+        return this.usersService.deleteResidentInBuilding(payload, params.id, dto);
+    }
 
+    @ApiOperation({summary: '건물 입주자 등록 체크 (입주자 확인)'})
+    @Post('building/:id/resident/confirm')
+    confirmResidentInBuilding(@Payload() payload: UserPayload, @Param() params: IdParams, @Body() dto: BuildingConfirmResidentDto) {
+        return this.usersService.confirmResidentInBuilding(payload, params.id, dto);
+    }
 
     @ApiOperation({summary: '유저 홈 정보 조회'})
     @Get('home')

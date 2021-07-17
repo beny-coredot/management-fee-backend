@@ -15,6 +15,8 @@ import { BuildingRequest } from './entities/building.request.entity';
 import { BuildingAddResidentDto } from './dto/building.add.resident.dto';
 import { BuildingAddRepresentDto } from './dto/building.add.represent.dto';
 import { BuildingResident, ResidentType } from './entities/building.resident.entity';
+import { BuildingRemoveResidentDto } from './dto/building.remove.resident.dto';
+import { BuildingConfirmResidentDto as BuildingConfirmResidentDto } from './dto/building.confrim.resident.dto';
 
 @Injectable()
 export class UserService {
@@ -35,6 +37,8 @@ export class UserService {
         private readonly buildingRequestRepository : Repository<BuildingRequest>,
         @InjectRepository(BuildingResident)
         private readonly buildingResidentRepository : Repository<BuildingResident>,
+        @InjectRepository(BuildingArea)
+        private readonly buildingAreaRepository : Repository<BuildingArea>,
 
     ) {}
     
@@ -73,7 +77,13 @@ export class UserService {
 
     async getUser(payload: UserPayload) {
 
-        return await this.userRepository.findOne({id: payload.id});
+        const user = await this.userRepository.findOne({id: payload.id});
+        const newBuildingArea = await this.buildingAreaRepository.find({relations: ['building'], where: {residentName: user.name, residentPhone: user.phone, isRegister: false}});
+
+        return {
+            user,
+            newBuildingArea
+        }
     }
 
     async findBuilding(payload: UserPayload, dto: BuildingDto) {
@@ -163,15 +173,31 @@ export class UserService {
 
         return await this.buildingRequestRepository.save(buildingRequest);
     }
+    
+    async isRepresentCheck(userId: number, buildingId: number) {
 
-    async addRepresentInBuilding(payload: UserPayload, id: number, dto: BuildingAddRepresentDto) {
-
-        const building = await this.buildingRepository.findOne({relations: ['BuildingAreas'], where: {id: id}});
-        if (building == undefined) {
-            throw new NotFoundException('Not found building');
-        }
+        // 입주자 대표 체크
+        const buildingResident = await this.buildingResidentRepository.createQueryBuilder('buildingResident')
+            .innerJoinAndSelect('buldingResident.user', 'user')
+            .leftJoinAndSelect('buildingResident.buildingArea', 'buildingArea')
+            .leftJoinAndSelect('buildingArea.building', 'building')
+            .where('user.id = :userId', {userId: userId})
+            .andWhere('building.id = :buildingId', {buildingId: buildingId})
+            .getOne();
         
-        const buildingArea = building.BuildingAreas.find(x => x.id == dto.buildingAreaId);
+        if (buildingResident.type != ResidentType.REPRESENT) {
+            throw new BadRequestException('Invlidate resident type');
+        }
+    }
+    
+    async addRepresentInBuilding(payload: UserPayload, buildingId: number, dto: BuildingAddRepresentDto) {
+
+        const buildingArea = await this.buildingAreaRepository.createQueryBuilder('buildingArea')
+            .innerJoin('buildingArea.building', 'building')
+            .where('building.id = :buildingId', {buildingId: buildingId})
+            .andWhere('buildingArea.id = :areaId', {areaId: dto.buildingAreaId})
+            .getOne();
+        
         if (buildingArea == undefined) {
             throw new NotFoundException('Not found building area');
         }
@@ -195,14 +221,17 @@ export class UserService {
         });
     
     }
-    async addRegidentInBuilding(payload: UserPayload, id: number, dto: BuildingAddResidentDto) {
 
-        const building = await this.buildingRepository.findOne({relations: ['BuildingAreas'], where: {id: id}});
-        if (building == undefined) {
-            throw new NotFoundException('Not found building');
-        }
+    async addResidentInBuilding(payload: UserPayload, buildingId: number, dto: BuildingAddResidentDto) {
 
-        const buildingArea = building.BuildingAreas.find(x => x.id == dto.buildingAreaId);
+        await this.isRepresentCheck(payload.id, buildingId);
+
+        const buildingArea = await this.buildingAreaRepository.createQueryBuilder('buildingArea')
+            .innerJoin('buildingArea.building', 'building')
+            .where('building.id = :buildingId', {buildingId: buildingId})
+            .andWhere('buildingArea.id = :areaId', {areaId: dto.buildingAreaId})
+            .getOne();
+        
         if (buildingArea == undefined) {
             throw new NotFoundException('Not found building area');
         }
@@ -211,9 +240,75 @@ export class UserService {
             throw new BadRequestException('Already register redident');
         }
 
-        // 입주자 대표 체크
-        
+        buildingArea.residentName = payload.name;
+        buildingArea.residentPhone = payload.phone;
+
+        await this.buildingAreaRepository.save(buildingArea);
     }
+
+    async deleteResidentInBuilding(payload: UserPayload, buildingId: number, dto: BuildingRemoveResidentDto) {
+
+        await this.isRepresentCheck(payload.id, buildingId);
+
+        const buildingArea = await this.buildingAreaRepository.createQueryBuilder('buildingArea')
+            .innerJoin('buildingArea.building', 'building')
+            .where('building.id = :buildingId', {buildingId: buildingId})
+            .andWhere('buildingArea.id = :areaId', {areaId: dto.buildingAreaId})
+            .getOne();
+        
+        if (buildingArea == undefined) {
+            throw new NotFoundException('Not found building area');
+        }
+
+        if (buildingArea.isRegister != true) {
+            throw new BadRequestException('Invalidate register area');
+        }
+
+        buildingArea.residentName = null;
+        buildingArea.residentPhone = null;
+        buildingArea.isRegister = false;
+
+        const buildingResident = await this.buildingResidentRepository.createQueryBuilder('buildingResident')
+            .leftJoinAndSelect('buildingResident.buildingArea', 'buildingArea')
+            .where('buildingArea.id = areaId', {areaId: dto.buildingAreaId})
+            .getMany();
+
+        await this.connection.transaction(async manager => {
+            await manager.save(buildingArea);
+            await manager.remove(buildingResident);
+        });
+    }
+
+    async confirmResidentInBuilding(payload: UserPayload, buildingId: number, dto: BuildingConfirmResidentDto) {
+
+        const buildingArea = await this.buildingAreaRepository.createQueryBuilder('buildingArea')
+            .innerJoin('buildingArea.building', 'building')
+            .where('building.id = :buildingId', {buildingId: buildingId})
+            .andWhere('buildingArea.id = :areaId', {areaId: dto.buildingAreaId})
+            .getOne();
+        
+        if (buildingArea == undefined) {
+            throw new NotFoundException('Not found building area');
+        }
+
+        if (buildingArea.isRegister == true) {
+            throw new BadRequestException('Invalidate register area');
+        }
+
+        buildingArea.isRegister = true;
+
+        const buildingResident = new BuildingResident();
+        buildingResident.buildingArea = buildingArea;
+        buildingResident.type = ResidentType.NORMAL;
+        buildingResident.user = new User();
+        buildingResident.user.id = payload.id;
+
+        await this.connection.transaction(async manager => {
+            await manager.save(buildingArea);
+            await manager.save(buildingResident);
+        });
+    }
+
 
     async getUserHome(payload: UserPayload) {
 

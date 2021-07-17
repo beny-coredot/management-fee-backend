@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthJwtModule } from 'src/authorization/auth.jwt.module';
 import { PublicDataService } from 'src/service/public.data.service';
+import { BuildingArea } from './entities/building.area.entity';
 import { Building } from './entities/building.entity';
 import { BuildingNotice } from './entities/building.notice.entity';
 import { BuildingRequest } from './entities/building.request.entity';
@@ -20,6 +21,7 @@ import { UserService } from './user.service';
             Building,
             BuildingRequest,
             BuildingResident,
+            BuildingArea,
             BuildingNotice,
             BuildingVote,
             BuildingVoteHistory

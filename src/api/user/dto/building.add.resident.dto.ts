@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class BuildingAddResidentDto {
 
-    @ApiProperty( { description: '건물 입주될 id' })
+    @ApiProperty( { description: '건물 입주될 areaId' })
     buildingAreaId: number;
 
     @ApiProperty( { description: '입주자 이름' })

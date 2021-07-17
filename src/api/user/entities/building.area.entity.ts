@@ -25,10 +25,10 @@ export class BuildingArea {
     @Column({ type: 'simple-json', name: 'meta', comment: '메타 정보(json)'})
     meta: object;
 
-    @Column( { name: 'resident_name', comment: '입주자 이름' })
+    @Column( { name: 'resident_name', comment: '입주자 이름', nullable: true })
     residentName: string;
 
-    @Column( { name: 'resident_phone', comment: '입주자 전화번호 '})
+    @Column( { name: 'resident_phone', comment: '입주자 전화번호', nullable: true })
     residentPhone: string;
 
     @Column( { name: 'is_register', comment: '입주자 등록 여부', default: false })
