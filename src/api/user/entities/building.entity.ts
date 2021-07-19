@@ -1,7 +1,9 @@
-import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { BuildingArea } from "./building.area.entity";
+import { BuildingFeeSetting } from "./building.fee.setting.entity";
 import { BuildingNotice } from "./building.notice.entity";
 import { BuildingResident } from "./building.resident.entity";
+import { BuildingSetting } from "./building.setting.entity";
 
 @Entity()
 export class Building {
@@ -73,10 +75,16 @@ export class Building {
     meta: object;
 
     @OneToMany(() => BuildingArea, buildingArea => buildingArea.building, {cascade: true})
-    BuildingAreas: BuildingArea[];
+    buildingAreas: BuildingArea[];
 
     @OneToMany(() => BuildingNotice, buildingNotice => buildingNotice.building)
     notices: BuildingNotice[];
+
+    @OneToMany(() => BuildingFeeSetting, buildingFeeSetting => buildingFeeSetting.building)
+    feeSetting: BuildingFeeSetting[];
+
+    @OneToOne(() => BuildingSetting, buildingSetting => buildingSetting.building)
+    setting: BuildingSetting;
 
     @UpdateDateColumn({ name: 'updated_at', comment: '수정일', select: false })
     updatedAt: Date;

@@ -35,7 +35,7 @@ export class BuildingArea {
     @Column( { name: 'is_register', comment: '입주자 등록 여부', default: false })
     isRegister: boolean;
 
-    @ManyToOne(() => Building, building => building.BuildingAreas, {onDelete: 'CASCADE'})
+    @ManyToOne(() => Building, building => building.buildingAreas, {onDelete: 'CASCADE'})
     @JoinColumn({name: 'building_id'})
     building: Building;
     

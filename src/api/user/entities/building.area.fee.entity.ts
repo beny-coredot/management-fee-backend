@@ -36,13 +36,13 @@ export class BuildingAreaFee {
     @Column( { name: 'is_pay', comment: '납부 여부', default: false })
     isPay: boolean;
 
-    @Column({ type: 'simple-json', name: 'meta', comment: '세대 전기 설정'})
+    @Column({ type: 'simple-json', name: 'unit_electricity', comment: '세대 전기 설정'})
     unitElectricity: object;
 
-    @Column({ type: 'simple-json', name: 'meta', comment: '세대 가스 설정'})
+    @Column({ type: 'simple-json', name: 'unit_gas', comment: '세대 가스 설정'})
     unitGas: object;
 
-    @Column({ type: 'simple-json', name: 'meta', comment: '세대 수도 설정'})
+    @Column({ type: 'simple-json', name: 'unit_water', comment: '세대 수도 설정'})
     unitWater: object;
 
     @Column({ type: 'simple-json', name: 'meta', comment: '메타 정보(json)(공용 및 세대)'})

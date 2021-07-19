@@ -138,7 +138,7 @@ export class UserService {
 
         // 전유물만 가져옴
         if (buildingAreaData.items.item instanceof Array) {
-            building.BuildingAreas = [];
+            building.buildingAreas = [];
 
             const buildingAreaInfo = buildingAreaData.items.item.filter((x: { exposPubuseGbCd: number, exposPubuseGbCdNm: string; }) => x.exposPubuseGbCd == 1 && x.exposPubuseGbCdNm == '전유');
             for (const areaInfo of buildingAreaInfo) {
@@ -150,7 +150,7 @@ export class UserService {
                 buildingArea.area = areaInfo.area;
                 buildingArea.meta = areaInfo;
 
-                building.BuildingAreas.push(buildingArea);
+                building.buildingAreas.push(buildingArea);
             }
         }
 
