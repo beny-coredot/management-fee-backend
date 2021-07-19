@@ -11,22 +11,22 @@ export class BuildingSetting {
     @PrimaryGeneratedColumn({ comment: '건물 셋팅 id'})
     id: number;
 
-    @Column( { name: 'pay_account', comment: '결제 계좌' })
+    @Column( { name: 'pay_account', comment: '결제 계좌', nullable: true })
     payAccount: string;
 
-    @Column( { name: 'pay_back', comment: '결제 은행' })
+    @Column( { name: 'pay_back', comment: '결제 은행', nullable: true })
     payBank: string;
 
-    @Column( { name: 'pay_name', comment: '결제 예금주명' })
+    @Column( { name: 'pay_name', comment: '결제 예금주명', nullable: true })
     payName: string;
 
-    @Column( { type: 'date', name: 'expose_date', comment: '노출 일자' })
+    @Column( { type: 'date', name: 'expose_date', comment: '노출 일자', nullable: true })
     exposeDate: Date;
 
-    @Column( { type: 'date', name: 'due_date', comment: '납부 기한' })
+    @Column( { type: 'date', name: 'due_date', comment: '납부 기한', nullable: true })
     dueDate: Date;
 
-    @Column( { name: 'add_fee_rate', comment: '기한 후 추가 비용 퍼센트' })
+    @Column( { name: 'add_fee_rate', comment: '기한 후 추가 비용 퍼센트', nullable: true })
     addFeeRate: number;
 
     @OneToOne(() => Building, building => building.setting, {onDelete: 'CASCADE'})

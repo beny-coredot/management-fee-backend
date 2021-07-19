@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserJoinDTO } from './dto/user.join.dto';
 import { UserLoginDto } from './dto/user.login.dto';
@@ -13,6 +13,7 @@ import { BuildingAddResidentDto } from './dto/building.add.resident.dto';
 import { BuildingAddRepresentDto } from './dto/building.add.represent.dto';
 import { BuildingRemoveResidentDto } from './dto/building.remove.resident.dto';
 import { BuildingConfirmResidentDto as BuildingConfirmResidentDto } from './dto/building.confrim.resident.dto';
+import { IdSlugParams } from 'src/common/id.slug.params';
 
 @ApiTags('user')
 @Controller('api/v1/user')
@@ -91,6 +92,36 @@ export class UserController {
     confirmResidentInBuilding(@Payload() payload: UserPayload, @Param() params: IdParams, @Body() dto: BuildingConfirmResidentDto) {
         return this.usersService.confirmResidentInBuilding(payload, params.id, dto);
     }
+
+    @ApiOperation({summary: '건물 공용 관리비 항목 추가'})
+    @UserAuth()
+    @Post('building/:id/fee/setting')
+    addFeeSettingInBuilding(@Payload() payload: UserPayload, @Param() params: IdParams, @Body() dto: BuildingConfirmResidentDto) {
+        return this.usersService.confirmResidentInBuilding(payload, params.id, dto);
+    }
+
+    @ApiOperation({summary: '건물 공용 관리비 항목 변경'})
+    @UserAuth()
+    @Put('building/:id/fee/setting/:slug')
+    modifyFeeSettingInBuilding(@Payload() payload: UserPayload, @Param() params: IdSlugParams, @Body() dto: BuildingConfirmResidentDto) {
+        return this.usersService.confirmResidentInBuilding(payload, params.id, dto);
+    }
+
+    @ApiOperation({summary: '건물 공용 관리비 항목 삭제'})
+    @UserAuth()
+    @Delete('building/:id/fee/setting/:slug')
+    deleteFeeSettingInBuilding(@Payload() payload: UserPayload, @Param() params: IdSlugParams, @Body() dto: BuildingConfirmResidentDto) {
+        return this.usersService.confirmResidentInBuilding(payload, params.id, dto);
+    }
+
+    @ApiOperation({summary: '건물 기본 설정 항목 변경'})
+    @UserAuth()
+    @Put('building/:id/setting')
+    modifySettingInBuilding(@Payload() payload: UserPayload, @Param() params: IdParams, @Body() dto: BuildingConfirmResidentDto) {
+        return this.usersService.confirmResidentInBuilding(payload, params.id, dto);
+    }
+
+    
 
     @ApiOperation({summary: '유저 홈 정보 조회'})
     @Get('home')

@@ -26,7 +26,7 @@ export class BuildingFeeSetting {
     @Column( { type: 'enum', enum: FeeSettingType, name: 'type', comment: '비용 타입(균등,면적,제외)' })
     type: FeeSettingType;
 
-    @Column( { type: 'simple-array', name: 'exclude_array', comment: '제외 항목들' })
+    @Column( { type: 'simple-array', name: 'exclude_array', comment: '제외 항목들', nullable: true })
     excludeArray: number[];
 
     @ManyToOne(() => Building, building => building.feeSetting, {onDelete: 'CASCADE'})

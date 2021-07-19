@@ -13,6 +13,9 @@ export class User {
     @Column( { name: 'phone', comment: '폰번호' })
     phone: string;
 
+    @Column({ name: 'password', comment: '비밀번호', nullable: true })
+    password: string;
+
     @Column({ name: 'kakao_id', comment: '카카오 id', nullable: true })
     kakaoId: string;
 

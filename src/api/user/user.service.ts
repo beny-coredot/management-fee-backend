@@ -17,6 +17,8 @@ import { BuildingAddRepresentDto } from './dto/building.add.represent.dto';
 import { BuildingResident, ResidentType } from './entities/building.resident.entity';
 import { BuildingRemoveResidentDto } from './dto/building.remove.resident.dto';
 import { BuildingConfirmResidentDto as BuildingConfirmResidentDto } from './dto/building.confrim.resident.dto';
+import { BuildingSetting } from './entities/building.setting.entity';
+import { BuildingFeeSetting, FeeSettingType } from './entities/building.fee.setting.entity';
 
 @Injectable()
 export class UserService {
@@ -154,7 +156,36 @@ export class UserService {
             }
         }
 
-        return await this.buildingRepository.save(building);
+        const buildingFeeDefaultSetting = []
+        
+        const nomalFee = new BuildingFeeSetting();
+        nomalFee.title = '일반 관리비';
+        nomalFee.type = FeeSettingType.BALANCE;
+        
+        const cleanFee = new BuildingFeeSetting();
+        cleanFee.title = '청소비';
+        cleanFee.type = FeeSettingType.BALANCE;
+
+        const satetyFee = new BuildingFeeSetting();
+        satetyFee.title = '안전 유지비';
+        satetyFee.type = FeeSettingType.BALANCE;
+
+        const elevatorFee = new BuildingFeeSetting();
+        elevatorFee.title = '승강기 유지비';
+        elevatorFee.type = FeeSettingType.EXCLUDE;
+        
+        buildingFeeDefaultSetting.push(nomalFee);
+        buildingFeeDefaultSetting.push(cleanFee);
+        buildingFeeDefaultSetting.push(satetyFee);
+        buildingFeeDefaultSetting.push(elevatorFee);
+
+        await this.connection.transaction(async manager => {
+            await manager.save(building);
+            await manager.save(new BuildingSetting());
+            await manager.save(buildingFeeDefaultSetting);
+        });
+
+        return building;
     }
 
     async requestBuilding(payload: UserPayload, dto: BuildingRequestDto) {
